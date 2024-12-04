@@ -47,7 +47,7 @@ var start = false;
 
 const middleware = (req, res, next) => {
     if(start) {
-        res.send("System currently executing....")
+        res.send("System currently executing...")
     } else {
         start = true;
         next();
