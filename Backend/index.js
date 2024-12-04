@@ -42,4 +42,16 @@ const updateUser = (vendors) => {
     });
 };
 
+// Setting up the middleware to prevent system run multiple times.
+var start = false;
+
+const middleware = (req, res, next) => {
+    if(start) {
+        res.send("System currently executing....")
+    } else {
+        start = true;
+        next();
+    }
+};
+
 
