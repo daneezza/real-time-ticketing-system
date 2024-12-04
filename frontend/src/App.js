@@ -19,7 +19,8 @@ function App() {
 
             const totalTicketSales = ticketData[1] - ticketData[2]; // Using data[1] - data[2] because data state hasn't been updated yet when the code executed.
             setTimeData((prev) => [
-                ...prev, { time: new Date().toLocaleTimeString, sales: totalTicketSales }
+                ...prev, 
+                { time: new Date().toLocaleTimeString, sales: totalTicketSales },
             ]);
         };
 
