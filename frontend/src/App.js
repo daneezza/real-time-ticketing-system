@@ -8,7 +8,7 @@ function App() {
     const [timeData, setTimeData] = ([]);
 
     useEffect(() => {
-        const socket = new WebSocket("ws://localhost:3001");
+        const socket = new WebSocket("ws://localhost:3000");
 
         socket.onopen = () => {
             console.log("Connected to the WebSocket Server...");

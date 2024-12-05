@@ -36,7 +36,7 @@ function SystemConfigurationForm() {
     const handleStart = () => {
         // Send a fetch request to the local server with all configuration parameters
         fetch(
-            `http://localhost:3001?totalTicketCount=${configFormData.totalTicketCount}&ticketReleaseRate=${configFormData.rateOfTicketReleasing}
+            `http://localhost:3000?totalTicketCount=${configFormData.totalTicketCount}&ticketReleaseRate=${configFormData.rateOfTicketReleasing}
             &customerRetrieveRate=${configFormData.rateOfCustomerRetrieval}&maxTicketCapacity=${configFormData.maximumTicketCapacity}
             &numberOfVendors=${configFormData.numOfVendors}&numberOfCustomers=${configFormData.numOfCustomer}`
         )
@@ -55,7 +55,7 @@ function SystemConfigurationForm() {
 
     // Handler to stop the simulation
     const handleStop = () => {
-        fetch("https://localhost:3001/stop")
+        fetch("https://localhost:3000/stop")
             .then((res) => res.text())
             .then((text) => console.log(text))
             .catch((error) => console.log(error))
@@ -68,83 +68,84 @@ function SystemConfigurationForm() {
             </center>
             <br/>
             
-            <div class="form-floating mb-3">
+            <div className="form-floating mb-3">
                 <input 
                     type="number" 
-                    class="form-control" 
+                    className="form-control" 
                     name="totalTicketCount" 
                     value={configFormData.totalTicketCount}
                     onChange={handleInputChange}
                     placeholder="Total Tickets Count"
                     min={1}
                 />
-                <label for="floatingInput">Total Ticket Count</label>
+                <label htmlFor="floatingInput">Total Ticket Count</label>
             </div>
 
-            <div class="form-floating mb-3">
+            <div className="form-floating mb-3">
                 <input 
                     type="number" 
-                    class="form-control" 
+                    className="form-control" 
                     name="rateOfTicketReleasing" 
                     value={configFormData.rateOfTicketReleasing}
                     onChange={handleInputChange}
                     placeholder="Ticket Rele Rate ( Seconds )"
                     min={1}
                 />
-                <label for="floatingInput">Ticket Release Rate ( Seconds )</label>
+                <label htmlFor="floatingInput">Ticket Release Rate ( Seconds )</label>
             </div>
 
-            <div class="form-floating mb-3">
+            <div className="form-floating mb-3">
                 <input 
                     type="number" 
-                    class="form-control" 
+                    className="form-control" 
                     name="rateOfCustomerRetrieval" 
                     value={configFormData.rateOfCustomerRetrieval}
                     onChange={handleInputChange}
                     placeholder="Customer Retrieval Rate ( Seconds )"
                     min={1}
                 />
-                <label for="floatingInput">Customer Retrieval Rate ( Seconds )</label>
+                <label htmlFor="floatingInput">Customer Retrieval Rate ( Seconds )</label>
             </div>
 
-            <div class="form-floating mb-3">
+            <div className="form-floating mb-3">
                 <input 
                     type="number" 
-                    class="form-control" 
+                    className="form-control" 
                     name="maximumTicketCapacity" 
                     value={configFormData.maximumTicketCapacity}
                     onChange={handleInputChange}
                     placeholder="Maximum Ticket Capacity"
                     min={1}
                 />
-                <label for="floatingInput">Maximum Ticket Capacity</label>
+                <label htmlFor="floatingInput">Maximum Ticket Capacity</label>
             </div>
 
-            <div class="form-floating mb-3">
+            <div className="form-floating mb-3">
                 <input 
                     type="number" 
-                    class="form-control" 
+                    className="form-control" 
                     name="numOfVendors" 
                     value={configFormData.numOfVendors}
                     onChange={handleInputChange}
                     placeholder="Number of Vendors"
                     min={1}
                 />
-                <label for="floatingInput">Number of Vendors</label>
+                <label htmlFor="floatingInput">Number of Vendors</label>
             </div>
 
-            <div class="form-floating mb-3">
+            <div className="form-floating mb-3">
                 <input 
                     type="number" 
-                    class="form-control" 
+                    className="form-control" 
                     name="numOfCustomer" 
                     value={configFormData.numOfCustomer}
                     onChange={handleInputChange}
                     placeholder="Number of Customers"
                     min={1}
                 />
-                <label for="floatingInput">Number of Customers</label>
+                <label htmlFor="floatingInput">Number of Customers</label>
             </div>
+
             <div className="buttons">
                 <button
                 type="button"

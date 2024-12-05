@@ -7,7 +7,7 @@ const { Worker } = require("worker_threads");
 
 // initializing
 const app = express();
-const PORT = 3001;
+const PORT = 3000;
 app.use(cors());
 
 // create a http server for the WebSocket
