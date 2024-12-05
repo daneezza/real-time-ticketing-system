@@ -1,0 +1,41 @@
+body {
+    min-width: 1000px;
+    margin: 1%;
+    -ms-user-select: none; /* Disables text selection */
+    -webkit-user-select: none; /* For WebKit browsers (Safari, Chrome) */
+    -moz-user-select: none; /* For Firefox */
+    user-select: none;
+    
+}
+  
+
+#title-webapp{
+    text-align: center;
+    align-content: center;
+    color: rgb(15, 4, 66);
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: rgb(14, 154, 219);
+    height: 50px;
+    border-radius: 10px;
+}
+
+.btn.btn-outline-success {
+    padding: 8px 30px;
+}
+  
+.btn.btn-outline-danger {
+padding: 8px 30px;
+float: right;
+}
+
+.btn.btn-outline-primary {
+padding: 8px 30px;
+}
+
+.buttons {
+display: flex;
+gap: 20px; /* Space between buttons */
+justify-content: center;
+align-items: center;
+padding: 10px;
+}

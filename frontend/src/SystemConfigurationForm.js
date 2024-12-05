@@ -7,7 +7,7 @@ function SystemConfigurationForm() {
         rateOfCustomerRetrieval: "",
         maximumTicketCapacity: "",
         numOfVendors: "",
-        numOfCustomer: ""
+        numOfCustomer: "",
     });
 
     // Handler for input changes in form fields
@@ -28,7 +28,7 @@ function SystemConfigurationForm() {
             rateOfCustomerRetrieval: "",
             maximumTicketCapacity: "",
             numOfVendors: "",
-            numOfCustomer: ""
+            numOfCustomer: "",
         });
     };
 
@@ -61,7 +61,116 @@ function SystemConfigurationForm() {
             .catch((error) => console.log(error))
     };
 
-    //Render methods should be here. Up next
+    return (
+        <div style={{width: "25%", margin: "2%"}}>
+            <center>
+                <h4>Configuration Dashboard</h4>
+            </center>
+            <br/>
+            
+            <div class="form-floating mb-3">
+                <input 
+                    type="number" 
+                    class="form-control" 
+                    name="totalTicketCount" 
+                    value={configFormData.totalTicketCount}
+                    onChange={handleInputChange}
+                    placeholder="Total Tickets Count"
+                    min={1}
+                />
+                <label for="floatingInput">Total Ticket Count</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input 
+                    type="number" 
+                    class="form-control" 
+                    name="rateOfTicketReleasing" 
+                    value={configFormData.rateOfTicketReleasing}
+                    onChange={handleInputChange}
+                    placeholder="Ticket Rele Rate ( Seconds )"
+                    min={1}
+                />
+                <label for="floatingInput">Ticket Release Rate ( Seconds )</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input 
+                    type="number" 
+                    class="form-control" 
+                    name="rateOfCustomerRetrieval" 
+                    value={configFormData.rateOfCustomerRetrieval}
+                    onChange={handleInputChange}
+                    placeholder="Customer Retrieval Rate ( Seconds )"
+                    min={1}
+                />
+                <label for="floatingInput">Customer Retrieval Rate ( Seconds )</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input 
+                    type="number" 
+                    class="form-control" 
+                    name="maximumTicketCapacity" 
+                    value={configFormData.maximumTicketCapacity}
+                    onChange={handleInputChange}
+                    placeholder="Maximum Ticket Capacity"
+                    min={1}
+                />
+                <label for="floatingInput">Maximum Ticket Capacity</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input 
+                    type="number" 
+                    class="form-control" 
+                    name="numOfVendors" 
+                    value={configFormData.numOfVendors}
+                    onChange={handleInputChange}
+                    placeholder="Number of Vendors"
+                    min={1}
+                />
+                <label for="floatingInput">Number of Vendors</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input 
+                    type="number" 
+                    class="form-control" 
+                    name="numOfCustomer" 
+                    value={configFormData.numOfCustomer}
+                    onChange={handleInputChange}
+                    placeholder="Number of Customers"
+                    min={1}
+                />
+                <label for="floatingInput">Number of Customers</label>
+            </div>
+            <div className="buttons">
+                <button
+                type="button"
+                className="btn btn-outline-success"
+                onClick={handleStart}
+                >
+                Start
+                </button>
+                <button
+                type="button"
+                className="btn btn-outline-primary"
+                onClick={handleReset}
+                >
+                Reset
+                </button>
+                <button
+                type="button"
+                className="btn btn-outline-danger"
+                onClick={handleStop}
+                >
+                Stop
+                </button>
+            </div>
+
+        </div>
+    );
 
 }
 

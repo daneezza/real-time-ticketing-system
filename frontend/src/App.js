@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import SystemConfigurationForm from './SystemConfigurationForm';
 import './App.css';
 
 function App() {
@@ -41,7 +42,16 @@ function App() {
     }, []);
 
 
+    return(
+        <div>
+            <h2 id='title-webapp'>EventPulse Ticketing System</h2>
 
+            <div style={{display: "flex"}}>
+                <SystemConfigurationForm/>
+            </div>   
+        </div>
+
+    );
 
 }
 
