@@ -1,145 +1,151 @@
-const express = require("express");
-const http = require("http"); // To create web socket server
-const WebSocket = require("ws") // To real-time updates
-const cors = require("cors"); // To resolve the sometimes browser blocking the request
-const TicketPool = require("./ticketPool");
 const { Worker } = require("worker_threads");
+const TicketPool = require("./ticketPool");
+const express = require("express");
+const http = require("http");
+const WebSocket = require("ws");
+const cors = require("cors"); // Import cors for handling Cross-Origin Resource Sharing (To resolve the sometimes browser blocking the requests)
 
-// initializing
+// Initialize the express application and set the server portId with enabling cors.
 const app = express();
 const PORT = 3000;
 app.use(cors());
 
-// create a http server for the WebSocket
-const server_http = http.createServer(app);
+// Create HTTP server
+const server = http.createServer(app);
 
-// create WebSocket server using the http server for real-time updates
-const wss = new WebSocket.Server({server_http})
+// Create WebSocket server using the HTTP server
+const ws = new WebSocket.Server({ server });
 
-// WebSocker server connection handler
-wss.on("connection", (ws) => {
-    console.log("New User Connected.");
+// Handle WebSocket connections
+ws.on("connection", (ws) => {
+  console.log("New client connected");
 
-    // Incoming message processing from the user
-    ws.on("message", (notification => {
-        console.log(`Received message: ${notification}`)
-    }));
 
-    // User Disconnection Tracking
-    ws.on("close",() => {
-        console.log("User Disconnected.")
-    })
+  // Handle incoming messages from the client
+  ws.on("message", (message) => {
+    console.log(`Received: ${message}`);
+
+  });
+
+  // Handle client disconnect
+  ws.on("close", () => {
+    console.log("Client disconnected");
+  });
 });
 
-// Initiate the Server
-server_http.listen(PORT, () => {
-    console.log(`Server is working on this url : http://localhost:${PORT}`)
+// Start the server
+server.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
 
-const updateUsers = (vendors) => {
-    wss.clients.forEach((user) => {
-        if (user.readyState === WebSocket.OPEN) {
-            user.send(JSON.stringify(vendors));
-        }
-    });
+// Function to update all connected WebSocket clients with vendors data.
+const updateClients = (vendors) => {
+  ws.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(vendors));
+    }
+  });
 };
 
-// Setting up the middleware to prevent system run multiple times.
+// Variable to keep track of whether the system has started.
 var start = false;
 
+// Middleware to check if the system has already started
 const middleware = (req, res, next) => {
-    if(start) {
-        res.send("System currently executing...")
-    } else {
-        start = true;
-        next();
-    }
+  if (start) {
+    res.send("System already running...");
+  } else {
+    start = true;
+    next();
+  }
 };
 
-// Initialize threads
+// Array to keep track of all worker threads.
 var threads = [];
 
+// Route to start the system. Routes starts after middleware
 app.get("/", middleware, (req, res) => {
-    const maxTicketCapacity = req.query.maximumTicketCapacity;
-    const numberOfVendors = req.query.numOfVendors;
-    const numberOfCustomers = req.query.numOfCustomers;
-    const rateReleasing = req.query.rateOfTicketReleasing;
-    const rateRetrieving = req.query.rateOfCustomerRetrieval;
-    const totalTicketCount = req.query.totalTicketCount;
+  const maxCapacity = req.query.maxTicketCapacity;
+  const numberOfVendors = req.query.numberOfVendors;
+  const numberOfCustomers = req.query.numberOfCustomers;
+  const releaseRate = req.query.ticketReleaseRate;
+  const customerRetrieveRate = req.query.customerRetrieveRate;
+  const totalTicketCount = req.query.totalTicketCount;
 
-    // Create a Shared TicketPool instance
-    const ticketPool = new TicketPool(        
-        maxTicketCapacity,
-        numberOfVendors,
-        numberOfCustomers,
-        updateUsers,
-        totalTicketCount
-    );
+  // Shared TicketPool instance
+  const ticketPool = new TicketPool(
+    maxCapacity,
+    numberOfVendors,
+    numberOfCustomers,
+    updateClients,
+    totalTicketCount
+  );
 
-    // Using a loop to create worker threads for each vendor
-    for (let i = 1; i <= numberOfVendors; i++) {
-        
-        // Create a new worker thread and passes vendor-data
-        const vendorWorker = new Worker("./vendor-ticket-worker.js", {
-            workerData: { vendorId: i, rateReleasing: rateReleasing },
-        });
-        threads.push(vendorWorker);
-
-        vendorWorker.on("message", async (notification) => {
-            if (notification.action === "generateTickets") {
-                await ticketPool.generateTickets(notification.vendorId);
-            }
-        });
-
-        vendorWorker.on("error", (error) => {
-            console.error(`Vendor-${i} encountered an error: `, error);
-        });
-
-        vendorWorker.on("exit", (exitCode) => {
-            if(exitCode !== 0) {
-                console.error(`Vendor-${i} has stopped with this exit code : ${exitCode}`);
-            }
-        });
-    }
-
-    // Using a loop to create worker threads for each customer
-    for (let i = 1; i <= numberOfCustomers; i++) {
-
-        // Create a new worker thread and passes customer-data
-        const customerWorker = new Worker("./customer-ticket-worker.js", {
-            workerData: { customerId: i, rateRetrieving: rateRetrieving },
-        });
-        threads.push(customerWorker);
-
-        customerWorker.on("message", async(notification) => {
-            if (notification.action === "reserveTickets") {
-                await ticketPool.purchaseTickets(notification.customerId);
-            }
-        });
-
-        customerWorker.on("error", (error) => {
-            console.error(`Customer-${i} encountered an error: `, error);
-        });
-
-        customerWorker.on("exit", (exitCode) => {
-            if(exitCode !== 0) {
-                console.error(`Customer-${i} has stopped with this exit code : ${exitCode}`);
-            }
-        });
-    }
-
-    res.send("System Excutes");
-});
-
-app.get("/stop", (req, res) => {
-    threads.forEach((thread) => {
-        thread.terminate().catch((error) => {
-            console.error("Error Occured. Failed to Terminate thread: ", error);
-        });
+  // Start vendors as worker threads
+  for (let i = 1; i <= numberOfVendors; i++) {
+    const vendorWorker = new Worker("./vendor-ticket-worker.js", {
+      workerData: { vendorId: i, releaseRate: releaseRate },
     });
-    start = false;
-    threads = [];
-    res.send("All threads are terminated and system was stopped.")
+    threads.push(vendorWorker); // Add vendor worker thread to the threads array.
+
+    // Handle messages from the vendor worker
+    vendorWorker.on("message", async (message) => {
+      if (message.action === "addTickets") {
+        await ticketPool.generateTickets(message.vendorId); // Generate tickets for the vendor.
+      }
+    });
+
+    // Handle errors from the vendor worker
+    vendorWorker.on("error", (err) => {
+      console.error(`Error from Vendor-${i}:`, err);
+    });
+
+    // Handle exit of the vendor worker
+    vendorWorker.on("exit", (code) => {
+      if (code !== 0) {
+        console.error(`Vendor-${i} stopped with exit code ${code}`);
+      }
+    });
+  }
+
+  // Start customers as worker threads
+  for (let i = 1; i <= numberOfCustomers; i++) {
+    const customerWorker = new Worker("./customer-ticket-worker.js", {
+      workerData: { customerId: i, customerRetrieveRate: customerRetrieveRate },
+    });
+    threads.push(customerWorker); // Add customer worker thread to the threads array.
+
+    // Handle messages from the customer worker
+    customerWorker.on("message", async (message) => {
+      if (message.action === "purchaseTicket") {
+        await ticketPool.purchaseTicket(message.customerId); // Purchase tickets for the customer. }
+      }
+    });
+    
+    // Handle errors from the customer worker
+    customerWorker.on("error", (err) => {
+      console.error(`Error from Customer-${i}:`, err);
+    });
+    
+    // Handle exit of the customer worker
+    customerWorker.on("exit", (code) => {
+      if (code !== 0) {
+        console.error(`Customer-${i} stopped with exit code ${code}`);
+      }
+    });
+  }
+
+  res.send("System start"); // Respond that the system has started.
 });
 
-
+// Route to stop the system
+app.get("/stop", (req, res) => {
+  threads.forEach((thread) => {
+    thread.terminate().catch((err) => {
+      console.error("Error terminating thread:", err);
+    });
+  });
+  start = false; // Set the start flag to false.
+  threads = [];
+  res.send("All threads are terminated and stopped the system.");
+});
