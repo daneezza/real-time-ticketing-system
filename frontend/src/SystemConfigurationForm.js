@@ -1,178 +1,224 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import "../src/App.css";
 
-function SystemConfigurationForm() {
-    const [ configFormData, setConfigFormData] = useState({
-        totalTicketCount: "",
-        rateOfTicketReleasing: "",
-        rateOfCustomerRetrieval: "",
-        maximumTicketCapacity: "",
-        numOfVendors: "",
-        numOfCustomer: "",
+function SystemConfigurationForm({ resetgraph }) {
+  const [formData, setFormData] = useState({
+    totalTicketCount: "",
+    ticketReleaseRate: "",
+    customerRetrieveRate: "",
+    maxTicketCapacity: "",
+    numberOfVendors: "",
+    numberOfCustomers: "",
+  });
+
+  const [error, setError] = useState("");
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleReset = () => {
+    setFormData({
+      totalTicketCount: "",
+      ticketReleaseRate: "",
+      customerRetrieveRate: "",
+      maxTicketCapacity: "",
+      numberOfVendors: "",
+      numberOfCustomers: "",
     });
+    setError("");
+  };
 
-    // Handler for input changes in form fields
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        // Spread the previous data and update the specific field dynamically
-        setConfigFormData((previousData) => ({
-            ...previousData, 
-            [name]: value,
-        }));
-    };
+  const validateForm = () => {
+    const {
+      totalTicketCount,
+      ticketReleaseRate,
+      customerRetrieveRate,
+      maxTicketCapacity,
+      numberOfVendors,
+      numberOfCustomers,
+    } = formData;
 
-    // Handler to reset all form fields to empty strings
-    const handleReset = () => {
-        setConfigFormData({
-            totalTicketCount: "",
-            rateOfTicketReleasing: "",
-            rateOfCustomerRetrieval: "",
-            maximumTicketCapacity: "",
-            numOfVendors: "",
-            numOfCustomer: "",
-        });
-    };
+    if (
+      !totalTicketCount ||
+      !ticketReleaseRate ||
+      !customerRetrieveRate ||
+      !maxTicketCapacity ||
+      !numberOfVendors ||
+      !numberOfCustomers
+    ) {
+      setError("All fields are required.");
+      return false;
+    }
 
-    // Handler to start the simulation
-    const handleStart = () => {
-        // Send a fetch request to the local server with all configuration parameters
-        fetch(
-            `http://localhost:3000?totalTicketCount=${configFormData.totalTicketCount}&ticketReleaseRate=${configFormData.rateOfTicketReleasing}
-            &customerRetrieveRate=${configFormData.rateOfCustomerRetrieval}&maxTicketCapacity=${configFormData.maximumTicketCapacity}
-            &numberOfVendors=${configFormData.numOfVendors}&numberOfCustomers=${configFormData.numOfCustomer}`
-        )
-            .then((res) => res.text())
-            .then((text) => {
-                if (text === "System currently executing...") {
-                    console.log(text);
-                } else {
-                    // If not running, reset the graph and log the response
-                    // ------------ add reset graph function after implemented to show reset graph after restart system again.
-                    console.log(text);
-                }
-            })
-            .catch((error) => console.log(error));
-    };
+    if (
+      totalTicketCount <= 0 ||
+      ticketReleaseRate <= 0 ||
+      customerRetrieveRate <= 0 ||
+      maxTicketCapacity <= 0 ||
+      numberOfVendors <= 0 ||
+      numberOfCustomers <= 0
+    ) {
+      setError("Values must be greater than 0.");
+      return false;
+    }
 
-    // Handler to stop the simulation
-    const handleStop = () => {
-        fetch("https://localhost:3000/stop")
-            .then((res) => res.text())
-            .then((text) => console.log(text))
-            .catch((error) => console.log(error))
-    };
+    setError("");
+    return true;
+  };
 
-    return (
-        <div style={{width: "25%", margin: "2%"}}>
-            <center>
-                <h4>Configuration Dashboard</h4>
-            </center>
-            <br/>
-            
-            <div className="form-floating mb-3">
-                <input 
-                    type="number" 
-                    className="form-control" 
-                    name="totalTicketCount" 
-                    value={configFormData.totalTicketCount}
-                    onChange={handleInputChange}
-                    placeholder="Total Tickets Count"
-                    min={1}
-                />
-                <label htmlFor="floatingInput">Total Ticket Count</label>
-            </div>
+  const handleStart = () => {
+    if (!validateForm()) return;
 
-            <div className="form-floating mb-3">
-                <input 
-                    type="number" 
-                    className="form-control" 
-                    name="rateOfTicketReleasing" 
-                    value={configFormData.rateOfTicketReleasing}
-                    onChange={handleInputChange}
-                    placeholder="Ticket Rele Rate ( Seconds )"
-                    min={1}
-                />
-                <label htmlFor="floatingInput">Ticket Release Rate ( Seconds )</label>
-            </div>
+    const url =  `http://localhost:3000?totalTicketCount=${formData.totalTicketCount}&ticketReleaseRate=${formData.ticketReleaseRate}&customerRetrieveRate=${formData.customerRetrieveRate}&maxTicketCapacity=${formData.maxTicketCapacity}&numberOfVendors=${formData.numberOfVendors}&numberOfCustomers=${formData.numberOfCustomers}`
+        console.log("Fetch URL: ", url);
+        fetch(url)
+          .then((res) => res.text())
+          .then((text) => {
+            if (text === "System already running...") {
+              console.log(text);
+            } else {
+              resetgraph();
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+            setError("Failed to start the system. Please try again.");
+          });
+  };
 
-            <div className="form-floating mb-3">
-                <input 
-                    type="number" 
-                    className="form-control" 
-                    name="rateOfCustomerRetrieval" 
-                    value={configFormData.rateOfCustomerRetrieval}
-                    onChange={handleInputChange}
-                    placeholder="Customer Retrieval Rate ( Seconds )"
-                    min={1}
-                />
-                <label htmlFor="floatingInput">Customer Retrieval Rate ( Seconds )</label>
-            </div>
+  const handleStop = () => {
+    fetch("http://localhost:3000/stop")
+      .then((res) => res.text())
+      .then((text) => console.log(text))
+      .catch((error) => {
+        console.error(error);
+        setError("Failed to stop the system. Please try again.");
+      });
+  };
 
-            <div className="form-floating mb-3">
-                <input 
-                    type="number" 
-                    className="form-control" 
-                    name="maximumTicketCapacity" 
-                    value={configFormData.maximumTicketCapacity}
-                    onChange={handleInputChange}
-                    placeholder="Maximum Ticket Capacity"
-                    min={1}
-                />
-                <label htmlFor="floatingInput">Maximum Ticket Capacity</label>
-            </div>
-
-            <div className="form-floating mb-3">
-                <input 
-                    type="number" 
-                    className="form-control" 
-                    name="numOfVendors" 
-                    value={configFormData.numOfVendors}
-                    onChange={handleInputChange}
-                    placeholder="Number of Vendors"
-                    min={1}
-                />
-                <label htmlFor="floatingInput">Number of Vendors</label>
-            </div>
-
-            <div className="form-floating mb-3">
-                <input 
-                    type="number" 
-                    className="form-control" 
-                    name="numOfCustomer" 
-                    value={configFormData.numOfCustomer}
-                    onChange={handleInputChange}
-                    placeholder="Number of Customers"
-                    min={1}
-                />
-                <label htmlFor="floatingInput">Number of Customers</label>
-            </div>
-
-            <div className="buttons">
-                <button
-                type="button"
-                className="btn btn-outline-success"
-                onClick={handleStart}
-                >
-                Start
-                </button>
-                <button
-                type="button"
-                className="btn btn-outline-primary"
-                onClick={handleReset}
-                >
-                Reset
-                </button>
-                <button
-                type="button"
-                className="btn btn-outline-danger"
-                onClick={handleStop}
-                >
-                Stop
-                </button>
-            </div>
-
+  return (
+    <div className="config-form" style={{ width: "25%", marginLeft: "1%", marginRight: "1%", marginTop: "2%" }}>
+      <center>
+        <h4>Configuration Form</h4>
+      </center>
+      <br/>
+      {error && (
+        <div style={{ color: "red", marginBottom: "10px" }}>
+          {error}
         </div>
-    );
+      )}
+      <div className="form-floating mb-3">
+        <input
+          type="number"
+          className="form-control"
+          name="totalTicketCount"
+          value={formData.totalTicketCount}
+          onChange={handleInputChange}
+          placeholder="Total Ticket Count"
+          min={1}
+        />
+        <label htmlFor="floatingInput">Total Ticket Count</label>
+      </div>
 
+      <div className="form-floating mb-3">
+        <input
+          type="number"
+          className="form-control"
+          name="ticketReleaseRate"
+          value={formData.ticketReleaseRate}
+          onChange={handleInputChange}
+          placeholder="Ticket Release Rate (Seconds)"
+          min={1}
+        />
+        <label htmlFor="floatingPassword">Ticket Release Rate (Seconds)</label>
+      </div>
+
+      <div className="form-floating mb-3">
+        <input
+          type="number"
+          className="form-control"
+          name="customerRetrieveRate"
+          value={formData.customerRetrieveRate}
+          onChange={handleInputChange}
+          placeholder="Customer Retrieve Rate (Seconds)"
+          min={1}
+        />
+        <label htmlFor="floatingPassword">
+          Customer Retrieve Rate (Seconds)
+        </label>
+      </div>
+
+      <div className="form-floating mb-3">
+        <input
+          type="number"
+          className="form-control"
+          name="maxTicketCapacity"
+          value={formData.maxTicketCapacity}
+          onChange={handleInputChange}
+          placeholder="Maximum Ticket Capacity"
+          min={1}
+        />
+        <label htmlFor="floatingPassword">
+          Maximum Ticket Capacity in Ticket Pool
+        </label>
+      </div>
+
+      <div className="form-floating mb-3">
+        <input
+          type="number"
+          className="form-control"
+          name="numberOfVendors"
+          value={formData.numberOfVendors}
+          onChange={handleInputChange}
+          placeholder="Number of Vendors"
+          min={1}
+        />
+        <label htmlFor="floatingPassword">Number of Vendors</label>
+      </div>
+
+      <div className="form-floating mb-3">
+        <input
+          type="number"
+          className="form-control"
+          name="numberOfCustomers"
+          value={formData.numberOfCustomers}
+          onChange={handleInputChange}
+          placeholder="Number of Customers"
+          min={1}
+        />
+        <label htmlFor="floatingPassword">Number of Customers</label>
+      </div>
+
+      <div className="buttons">
+        <button
+          type="button"
+          className="btn btn-success"
+          onClick={handleStart}
+        >
+          Start
+        </button>
+        <button
+          type="button"
+          className="btn btn-secondary"
+          onClick={handleReset}
+        >
+          Reset
+        </button>
+        <button
+          type="button"
+          className="btn btn-danger"
+          onClick={handleStop}
+        >
+          Stop
+        </button>
+      </div>
+    </div>
+  );
 }
 
 export default SystemConfigurationForm;
