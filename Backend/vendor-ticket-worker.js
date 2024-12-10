@@ -10,7 +10,7 @@ try{
     setInterval(() => {
         parentPort.postMessage({action: "addTickets", vendorId: vendorId});
         console.log(`Vendor ${vendorId} generating tickets.`);
-    }, workerData.releaseRate * 1000);
+    }, 1000/ workerData.releaseRate);
 
 } catch (error) { 
     parentPort.postMessage({ action: "error", error: error.message }); 
