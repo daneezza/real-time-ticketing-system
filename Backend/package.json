@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node index.js"
   },
-  "author": "",
+  "author": "Daneesha Hansaka",
   "license": "ISC",
   "description": "",
   "devDependencies": {
