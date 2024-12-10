@@ -12,7 +12,7 @@ try{
     setInterval(() => {
         parentPort.postMessage({action: "purchaseTicket", customerId: customerId});
         console.log(`Customer ${customerId} reserving tickets.`);
-    }, workerData.customerRetrieveRate * 1000);
+    }, 1000 / workerData.customerRetrieveRate);
     
 } catch (error) {
     parentPort.postMessage({ action: "error", error: error.message }); 
