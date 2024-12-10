@@ -36,7 +36,7 @@ A comprehensive real-time platform for managing event ticketing, built with Node
         ```sh npm install```
 
     - Start the backend server:
-        ```sh node index.js```
+        ```sh npm start```
 
 3. **Set up the frontend:**
 
