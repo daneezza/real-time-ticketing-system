@@ -30,8 +30,8 @@ A comprehensive real-time platform for managing event ticketing, built with Node
 
     - Navigate to the backend directory:
       ```sh
-      cd backend`
-      ``
+      cd backend
+      ```
 
     - Install dependencies:
         ```sh
