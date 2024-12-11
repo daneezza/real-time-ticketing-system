@@ -14,7 +14,6 @@ A comprehensive real-time platform for managing event ticketing, built with Node
 
 ### Prerequisites
 
-- **Java Version:** 11 or higher
 - **Node.js Version:** 14.x or higher
 - **NPM:** 6.x or higher
 
@@ -30,24 +29,36 @@ A comprehensive real-time platform for managing event ticketing, built with Node
 2. **Set up the backend:**
 
     - Navigate to the backend directory:
-      ```sh cd backend```
+      ```sh
+      cd backend`
+      ``
 
     - Install dependencies:
-        ```sh npm install```
+        ```sh
+      npm install
+        ```
 
     - Start the backend server:
-        ```sh npm start```
+        ```sh
+       npm start
+        ```
 
 3. **Set up the frontend:**
 
     - Navigate to the frontend directory:
-        ```shcd frontend```
+        ```sh
+      cd frontend
+        ```
 
     - Install dependencies:
-        ```sh npm install```
+        ```sh
+       npm install
+        ```
 
     - Start the frontend development server:
-        ```sh npm start```
+        ```sh
+       npm start
+        ```
 
 ## Usage Instructions
 
