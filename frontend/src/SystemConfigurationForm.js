@@ -135,7 +135,7 @@ function SystemConfigurationForm({ resetgraph }) {
           placeholder="Ticket Release Rate (Seconds)"
           min={1}
         />
-        <label htmlFor="floatingPassword">Ticket Release Rate (Seconds)</label>
+        <label htmlFor="floatingPassword">Ticket Release Rate (Per Second)</label>
       </div>
 
       <div className="form-floating mb-3">
@@ -149,7 +149,7 @@ function SystemConfigurationForm({ resetgraph }) {
           min={1}
         />
         <label htmlFor="floatingPassword">
-          Customer Retrieve Rate (Seconds)
+          Customer Retrieve Rate (Per Second)
         </label>
       </div>
 
