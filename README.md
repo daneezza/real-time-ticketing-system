@@ -29,16 +29,19 @@ A comprehensive real-time platform for managing event ticketing, built with Node
 2. **Set up the backend:**
 
     - Navigate to the backend directory:
+
       ```sh
       cd backend
       ```
 
     - Install dependencies:
+
         ```sh
       npm install
         ```
 
     - Start the backend server:
+
         ```sh
        npm start
         ```
@@ -46,16 +49,19 @@ A comprehensive real-time platform for managing event ticketing, built with Node
 3. **Set up the frontend:**
 
     - Navigate to the frontend directory:
+
         ```sh
       cd frontend
         ```
 
     - Install dependencies:
+
         ```sh
        npm install
         ```
 
     - Start the frontend development server:
+
         ```sh
        npm start
         ```
